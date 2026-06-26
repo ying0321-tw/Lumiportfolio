@@ -8,52 +8,33 @@
 </head>
 <body>
   <header class="site-header">
-    <a href="index.html" class="logo">TSOU CHIA YING <span>•</span></a>
+    <a class="logo" href="index.html">TSOU CHIA YING <span>•</span></a>
     <nav class="nav">
       <a href="#works">WORKS</a>
-      <a href="#contact">ABOUT / CONTACT</a>
+      <a href="#contact">CONTACT</a>
     </nav>
   </header>
 
   <main>
     <section class="hero">
-      <div class="hero-left reveal-text">
-        <h1>讓內容更貼近人的感受，<br>溝通將自然發生。</h1>
-        <p class="hero-tags">行銷企劃 × 平面設計<br>短影片製作 × 攝影 × UIUX</p>
-        <div class="scroll-hint"><span></span><p>SCROLL</p></div>
-      </div>
-      <div class="hero-right" aria-hidden="true">
-        <svg viewBox="0 0 820 420" xmlns="http://www.w3.org/2000/svg">
-          <path d="M40 240 C180 120, 250 20, 360 70 C430 100, 460 190, 570 160 C660 130, 710 70, 820 0" />
-          <path d="M40 240 C190 250, 280 280, 390 230 C510 180, 580 120, 700 120" />
-          <path d="M40 240 C190 360, 330 360, 460 300 C610 230, 700 180, 820 180" />
-          <path d="M360 70 C320 180, 360 220, 450 220" />
-          <path d="M700 120 C620 220, 620 300, 680 350" />
-          <circle cx="40" cy="240" r="5" /><circle cx="360" cy="70" r="5" /><circle cx="450" cy="220" r="5" /><circle cx="520" cy="300" r="5" /><circle cx="700" cy="120" r="5" /><circle cx="680" cy="350" r="5" />
-          <text x="338" y="40">DESIGN / 設計</text><text x="10" y="275">BRANDING / 品牌</text><text x="430" y="245">PEOPLE / 人</text><text x="500" y="330">PHOTO / 攝影</text><text x="680" y="100">CONTENT / 內容</text><text x="665" y="385">VIDEO / 影像</text>
-        </svg>
-      </div>
+      <p class="eyebrow">Portfolio / 2026</p>
+      <h1>讓內容更貼近人的感受，<br>溝通將自然發生。</h1>
+      <p class="hero-copy">行銷企劃、社群內容、平面設計、短影片製作與 UI/UX。把觀察到的訊號，整理成可以被理解的樣子。</p>
     </section>
 
     <section id="works" class="works">
-      <div class="works-header"><h2>Works <span>•</span></h2></div>
+      <div class="works-top">
+        <h2>Works <span>•</span></h2>
+        <div class="filter-nav" id="filterNav"></div>
+      </div>
       <div class="work-grid" id="workGrid"></div>
     </section>
   </main>
 
-  <footer id="contact" class="simple-contact">
-    <div class="contact-title"><h2>Let’s connect <span>•</span></h2></div>
-    <p class="contact-mail-text">yin9423@gmail.com</p>
+  <footer id="contact" class="footer">
+    <h2>Let’s connect <span>•</span></h2>
+    <p>yin9423@gmail.com</p>
   </footer>
-
-  <div class="floating-work-filter" id="floatingWorkFilter">
-    <button class="active" type="button" data-filter="all">ALL</button>
-    <button type="button" data-filter="marketing">行銷</button>
-    <button type="button" data-filter="graphic">設計</button>
-    <button type="button" data-filter="video">影片</button>
-    <button type="button" data-filter="photo">攝影</button>
-    <button type="button" data-filter="uiux">UIUX</button>
-  </div>
 
   <script src="js/worksData.js"></script>
   <script src="js/main.js"></script>

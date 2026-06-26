@@ -1,88 +1,68 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get('id') || 'marketing1';
-  const works = window.WORKS || [];
-  const item = works.find(w => w.id === id) || works[0];
-  const page = document.querySelector('#casePage');
+const root = document.querySelector('#caseRoot');
+const params = new URLSearchParams(window.location.search);
+const id = params.get('id') || PROJECTS[0].id;
+const project = PROJECTS.find(p => p.id === id) || PROJECTS[0];
+const index = PROJECTS.findIndex(p => p.id === project.id);
+const prev = PROJECTS[(index - 1 + PROJECTS.length) % PROJECTS.length];
+const next = PROJECTS[(index + 1) % PROJECTS.length];
+document.title = `${project.title}｜TSOU CHIA YING`;
 
-  if(!item || !page){ return; }
-  document.title = `${item.title}｜TSOU CHIA YING`;
-
-  const defaultSections = [
-    {kind:'text', eyebrow:'OVERVIEW', title:'專案背景', body:item.desc || '此段可放置專案背景、目標、需求與你的角色。'},
-    {kind:'image', src:item.cover || item.thumb, caption:'主視覺／作品完整圖。'},
-    {kind:'text', eyebrow:'APPROACH', title:'執行方式', body:'此段可說明你如何拆解問題、規劃方向、安排素材與完成設計。'},
-    {kind:'image', src:item.thumb, caption:'細節圖或延伸應用，可自行替換。'},
-    {kind:'text', eyebrow:'RESULTS', title:'成果整理', body:'此段可補充成效、學習、數據或專案後續應用。'}
-  ];
-
-  const sections = item.sections && item.sections.length ? item.sections : defaultSections;
-  const currentIndex = works.findIndex(w => w.id === item.id);
-  const next = works[(currentIndex + 1) % works.length];
-
-  function infoRow(label, value){
-    return value ? `<div><dt>${label}</dt><dd>${value}</dd></div>` : '';
-  }
-
-  function renderSection(section){
-    if(section.kind === 'image'){
-      return `
-        <section class="case-section case-image-section">
-          <img src="${section.src}" alt="${section.caption || item.title}" onerror="this.classList.add('img-missing')" />
-          ${section.caption ? `<p class="case-caption">${section.caption}</p>` : ''}
-        </section>
-      `;
+function esc(str=''){
+  return String(str).replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+}
+function renderTextBlock(section){
+  const ps = section.text ? section.text.map(t=>`<p>${esc(t)}</p>`).join('') : '';
+  const lis = section.list ? `<ul>${section.list.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>` : '';
+  return `<div class="case-text"><h2>${esc(section.title)}</h2>${ps}${lis}</div>`;
+}
+function renderSections(){
+  return project.sections.map((s,i)=>{
+    const withImage = i === 0 && !project.hero;
+    if(withImage){
+      return `<section class="case-section"><div class="case-media"><img src="${project.image}" alt="${esc(project.title)}"></div>${renderTextBlock(s)}</section>`;
     }
-
-    if(section.kind === 'split'){
-      return `
-        <section class="case-section case-split">
-          <div>
-            <p class="case-eyebrow">${section.eyebrow || ''}</p>
-            <h2>${section.title || ''}</h2>
-            <p>${section.body || ''}</p>
-          </div>
-          <img src="${section.src}" alt="${section.title || item.title}" onerror="this.classList.add('img-missing')" />
-        </section>
-      `;
-    }
-
-    return `
-      <section class="case-section case-text-block">
-        <p class="case-eyebrow">${section.eyebrow || ''}</p>
-        <h2>${section.title || ''}</h2>
-        <p>${section.body || ''}</p>
-      </section>
-    `;
-  }
-
-  page.innerHTML = `
-    <a class="back-link" href="index.html#works">← WORKS</a>
-
-    <section class="case-hero">
-      <div class="case-cover">
-        <img src="${item.cover || item.thumb}" alt="${item.title}" onerror="this.classList.add('img-missing')" />
-      </div>
-      <div class="case-intro">
-        <p class="case-category">${item.category}</p>
-        <h1>${item.title}</h1>
-        <p class="case-desc">${item.desc || ''}</p>
-        ${item.link ? `<a class="case-button" href="${item.link}" target="_blank" rel="noopener">觀看影片</a>` : ''}
-        <dl class="case-meta">
-          ${infoRow('YEAR', item.year)}
-          ${infoRow('TYPE', item.type)}
-          ${infoRow('ROLE', item.role)}
-        </dl>
-      </div>
-    </section>
-
-    <div class="case-body">
-      ${sections.map(renderSection).join('')}
-    </div>
-
-    <section class="case-next">
-      <p>NEXT PROJECT</p>
-      <a href="work.html?id=${next.id}">${next.title} →</a>
-    </section>
+    return `<section class="case-section full">${renderTextBlock(s)}</section>`;
+  }).join('');
+}
+function renderVideos(){
+  if(!project.videos) return '';
+  const items = project.videos.items || [];
+  const cards = items.length ? items.map(v=>`
+    <div class="video-frame"><iframe src="https://www.youtube.com/embed/${v}" title="YouTube video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+  `).join('') : `
+    <a class="video-card" href="${project.videos.channel}" target="_blank" rel="noopener">
+      <span class="play-dot">▶</span>
+      <strong>Open YouTube Shorts</strong>
+      <p>${esc(project.videos.note || '前往 YouTube 頻道觀看短影片。')}</p>
+    </a>
   `;
-});
+  return `<section class="video-section"><div class="case-text"><h2>Shorts / Reels</h2><p>此區塊可嵌入 YouTube Shorts。若要改成單支影片播放，只要在 worksData.js 補上影片 ID。</p></div><div class="video-grid">${cards}</div></section>`;
+}
+function renderSocials(){
+  if(!project.socials) return '';
+  return `<section class="case-section full"><div class="case-text"><h2>Social Links</h2><p>社群經營與影音內容延伸。</p><div class="social-links">${project.socials.map(s=>`<a href="${s.url}" target="_blank" rel="noopener">${esc(s.label)}</a>`).join('')}</div></div></section>`;
+}
+function renderSourceBoard(){
+  if(project.id === 'egg') return '';
+  return `<div class="source-board"><h2>Original Project Board</h2><img src="${project.image}" alt="${esc(project.title)} 原始專案資料"></div>`;
+}
+root.innerHTML = `
+  <section class="case-hero ${project.hero ? '' : 'no-image'}">
+    <p class="case-kicker">${labelOf(project.category)}</p>
+    <h1>${esc(project.title)}</h1>
+    <p class="case-subtitle">${esc(project.subtitle)}</p>
+    ${project.hero ? `<div class="case-cover"><img src="${project.image}" alt="${esc(project.title)}"></div>` : ''}
+    <a class="back-link" href="index.html#works">← Back to Works</a>
+  </section>
+  <dl class="case-overview">${Object.entries(project.overview).map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+  ${renderSections()}
+  ${project.quote ? `<div class="quote-block"><p>${esc(project.quote)}</p></div>` : ''}
+  ${renderVideos()}
+  ${renderSocials()}
+  ${renderSourceBoard()}
+  <nav class="case-nav">
+    <a href="work.html?id=${prev.id}"><span>Previous</span>${esc(prev.title)}</a>
+    <a href="work.html?id=${next.id}"><span>Next</span>${esc(next.title)}</a>
+  </nav>
+`;
+function labelOf(id){ return (CATEGORIES.find(c=>c.id===id)||{}).label || id; }
