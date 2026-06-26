@@ -83,7 +83,27 @@ document.addEventListener('DOMContentLoaded', () => {
       media: 'files/work-03.jpg',
       desc: '從品牌策略、社群企劃、活動視覺到線上線下推廣，協助市場改建後重新建立與在地生活的連結。',
       contents: ['品牌定位', '社群內容企劃', '活動視覺整合', '專案成效整理'],
-      info: { 年份: '2025', 類型: 'Marketing Project', 角色: '企劃 / 品牌整合' }
+      info: { 年份: '2025', 類型: 'Marketing Project', 角色: '企劃 / 品牌整合' },
+      // 專案內頁段落：需要增加圖片＋文字，就複製下面格式新增。
+      sections: [
+        {
+          label: 'OVERVIEW',
+          title: '專案背景',
+          text: '整理品牌定位、活動溝通與社群素材，讓專案從視覺到推廣能保持一致的語氣。',
+          image: 'files/work-03.jpg'
+        },
+        {
+          label: 'APPROACH',
+          title: '執行方式',
+          text: '先確認受眾與溝通目的，再拆解成社群貼文、活動主視覺與線下素材，讓每個接觸點都能快速被理解。',
+          image: 'files/work-03.jpg'
+        },
+        {
+          label: 'RESULT',
+          title: '成果整理',
+          text: '最後將活動素材、推廣重點與成效觀察整理成案例頁，讓觀看者能理解你在專案中的角色與貢獻。'
+        }
+      ]
     },
 
     marketing2: {
@@ -428,9 +448,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderProjectDetail(data) {
     return `
+      <nav class="project-topbar">
+        <button class="project-back-button" type="button" data-close-project>← WORKS</button>
+        <p>${escapeHTML(data.category || '')}</p>
+      </nav>
+
       <header class="project-hero-block">
         <div>
-          <p class="project-category">${escapeHTML(data.category || '')}</p>
+          <p class="project-category">PROJECT</p>
           <h2>${escapeHTML(data.title || '作品介紹')}</h2>
           <p class="project-lead">${escapeHTML(data.desc || '')}</p>
         </div>
@@ -442,9 +467,9 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="project-body-grid">
         ${renderContentList(data)}
         <section class="project-text-block">
-          <p class="project-kicker">NOTE</p>
-          <h3>呈現方式</h3>
-          <p>此版改成案例頁結構，圖片與文字分段呈現。之後只要在作品資料中新增 section，就可以自由增加「圖片＋說明」，不用再把整個專案做成一張長圖。</p>
+          <p class="project-kicker">READING FORMAT</p>
+          <h3>圖片與文字分開說明</h3>
+          <p>這個專案內頁已改成案例頁閱讀方式：先放主視覺，再往下分段放「圖片＋文字」。之後不用把整個專案做成一張長圖，只要在 script.js 的 sections 裡面新增段落即可。</p>
         </section>
       </div>
 
@@ -460,6 +485,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!data || !modal || !modalProjectDetail) return;
 
     modalProjectDetail.innerHTML = renderProjectDetail(data);
+
+    modalProjectDetail.querySelector('[data-close-project]')?.addEventListener('click', closeModal);
+
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
   }

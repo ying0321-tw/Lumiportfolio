@@ -1798,3 +1798,144 @@ button{
     padding-top:36px;
   }
 }
+
+
+/* === Click project: full case-study page layout === */
+.modal.active{
+  overflow:hidden;
+}
+
+.modal-bg{
+  background:rgba(246,243,238,.96) !important;
+  backdrop-filter:blur(8px);
+}
+
+.project-detail-modal{
+  width:100vw !important;
+  height:100vh !important;
+  margin:0 !important;
+  max-width:none !important;
+  border-radius:0 !important;
+  background:var(--paper) !important;
+}
+
+.project-detail-modal .modal-close{
+  position:fixed !important;
+  top:28px !important;
+  right:34px !important;
+  z-index:20;
+  margin:0 !important;
+}
+
+.project-detail{
+  width:min(1080px, calc(100vw - 56px));
+  margin:0 auto;
+  height:100vh;
+  padding:92px 0 120px !important;
+  overflow-y:auto;
+}
+
+.project-topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:24px;
+  margin-bottom:56px;
+  padding-bottom:22px;
+  border-bottom:1px solid var(--line);
+  color:var(--sub);
+  font-size:12px;
+  letter-spacing:.14em;
+}
+
+.project-back-button{
+  border:none;
+  background:none;
+  color:var(--text);
+  cursor:pointer;
+  font-size:12px;
+  letter-spacing:.14em;
+}
+
+.project-back-button:hover{
+  color:var(--accent);
+}
+
+.project-hero-block{
+  margin-bottom:56px;
+}
+
+.project-main-media{
+  margin-bottom:72px !important;
+  background:#f2ede6;
+}
+
+.project-main-media img,
+.project-story-image img{
+  width:100%;
+  height:auto;
+  display:block;
+}
+
+.project-body-grid{
+  margin-bottom:86px !important;
+}
+
+.project-story{
+  gap:76px !important;
+}
+
+.project-story-row{
+  grid-template-columns:1fr !important;
+  gap:28px !important;
+  align-items:start !important;
+  padding-top:0 !important;
+  border-top:0 !important;
+}
+
+.project-story-text{
+  width:min(720px,100%);
+  padding-top:0;
+}
+
+.project-story-text h3{
+  font-size:22px;
+  margin-bottom:12px;
+}
+
+.project-story-text p{
+  font-size:15px;
+  line-height:2.1;
+}
+
+@media(max-width:768px){
+  .project-detail{
+    width:calc(100vw - 40px);
+    padding:74px 0 92px !important;
+  }
+
+  .project-detail-modal .modal-close{
+    top:18px !important;
+    right:18px !important;
+  }
+
+  .project-topbar{
+    margin-bottom:36px;
+  }
+
+  .project-hero-block{
+    margin-bottom:36px;
+  }
+
+  .project-main-media{
+    margin-bottom:48px !important;
+  }
+
+  .project-body-grid{
+    margin-bottom:58px !important;
+  }
+
+  .project-story{
+    gap:52px !important;
+  }
+}
