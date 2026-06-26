@@ -291,13 +291,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   const modal = document.querySelector('#workModal');
-  const modalMedia = document.querySelector('#modalMedia');
-  const modalCategory = document.querySelector('#modalCategory');
-  const modalTitle = document.querySelector('#modalTitle');
-  const modalDesc = document.querySelector('#modalDesc');
-  const modalTags = document.querySelector('#modalTags');
+  const modalProjectDetail = document.querySelector('#modalProjectDetail');
   const closeBtn = document.querySelector('.modal-close');
   const modalBg = document.querySelector('.modal-bg');
+
+  function escapeHTML(value = '') {
+    return String(value)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+  }
 
   function getFallbackData(element) {
     const img = element.querySelector('img');
@@ -316,108 +321,154 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  function renderMedia(data) {
+  function renderMediaBlock(data, className = '') {
     if (data.embed) {
       return `
-        <div class="video-wrap">
+        <div class="project-video ${className}">
           <iframe
             class="embed-video"
-            src="${data.embed}"
+            src="${escapeHTML(data.embed)}"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen
             frameborder="0">
           </iframe>
-
-          ${data.link ? `
-            <a class="video-link" href="${data.link}" target="_blank" rel="noopener">
-              若影片無法播放，點此開啟外部影片
-            </a>
-          ` : ''}
         </div>
       `;
     }
 
     if (data.link && data.link !== 'https://youtu.be/') {
       return `
-        <div class="external-video-box">
-          <a class="video-play-hotspot" href="${data.link}" target="_blank" rel="noopener" aria-label="播放影片">
+        <div class="external-video-box ${className}">
+          <a class="video-play-hotspot" href="${escapeHTML(data.link)}" target="_blank" rel="noopener" aria-label="播放影片">
             <span>▶</span>
           </a>
-          <p class="video-mobile-note">點擊下方按鈕，開啟完整短影片作品。</p>
-          <a class="video-cta-button" href="${data.link}" target="_blank" rel="noopener">
-            播放影片
-          </a>
+          <p class="video-mobile-note">點擊按鈕，開啟完整短影片作品。</p>
+          <a class="video-cta-button" href="${escapeHTML(data.link)}" target="_blank" rel="noopener">播放影片</a>
         </div>
       `;
     }
 
-    if (data.type === 'image' && data.media) {
+    if (data.media) {
       return `
-        <img
-          class="modal-image-file"
-          src="${data.media}"
-          alt="${data.title}">
+        <figure class="project-image ${className}">
+          <img src="${escapeHTML(data.media)}" alt="${escapeHTML(data.title || '作品圖片')}">
+        </figure>
       `;
     }
 
+    return `<div class="media-error ${className}">此作品目前尚未設定媒體內容。</div>`;
+  }
+
+  function renderInfo(data) {
+    if (!data.info) return '';
+
     return `
-      <div class="media-error">
-        此作品目前尚未設定媒體內容。
-      </div>
+      <dl class="project-info-list">
+        ${Object.entries(data.info).map(([key, value]) => `
+          <div>
+            <dt>${escapeHTML(key)}</dt>
+            <dd>${escapeHTML(value)}</dd>
+          </div>
+        `).join('')}
+      </dl>
     `;
   }
 
-  function renderDetail(data) {
-    const contentList = data.contents
-      ? `
-        <div class="modal-section">
-          <h4>專案內容</h4>
-          <ul>
-            ${data.contents.map((item) => `<li>${item}</li>`).join('')}
-          </ul>
-        </div>
-      `
-      : '';
+  function renderContentList(data) {
+    if (!data.contents || !data.contents.length) return '';
 
-    const infoList = data.info
-      ? `
-        <div class="modal-section">
-          <h4>專案資訊</h4>
-          <dl>
-            ${Object.entries(data.info).map(([key, value]) => `
-              <div>
-                <dt>${key}</dt>
-                <dd>${value}</dd>
-              </div>
-            `).join('')}
-          </dl>
-        </div>
-      `
-      : '';
+    return `
+      <section class="project-text-block">
+        <p class="project-kicker">PROJECT CONTENTS</p>
+        <h3>我負責的內容</h3>
+        <ul class="project-bullets">
+          ${data.contents.map((item) => `<li>${escapeHTML(item)}</li>`).join('')}
+        </ul>
+      </section>
+    `;
+  }
 
-    return contentList + infoList;
+  function renderSections(data) {
+    const defaultSections = [
+      {
+        label: 'OVERVIEW',
+        title: '專案概述',
+        text: data.desc,
+        image: data.media
+      },
+      {
+        label: 'APPROACH',
+        title: '執行方式',
+        text: '先整理專案目標與觀看情境，再依照受眾需要安排資訊層級、視覺重點與溝通節奏，讓作品不只是展示完成圖，也能說明背後的判斷。'
+      },
+      {
+        label: 'RESULT',
+        title: '成果整理',
+        text: '將專案中的素材、流程與成效重點整理成可閱讀的案例頁，讓觀看者能快速理解作品目的、角色分工與最終產出。'
+      }
+    ];
+
+    const sections = data.sections && data.sections.length ? data.sections : defaultSections;
+
+    return sections.map((section, index) => `
+      <section class="project-story-row ${section.image ? 'has-image' : ''}">
+        ${section.image ? `
+          <figure class="project-story-image">
+            <img src="${escapeHTML(section.image)}" alt="${escapeHTML(section.title || data.title)}">
+          </figure>
+        ` : ''}
+        <div class="project-story-text">
+          ${section.label ? `<p class="project-kicker">${escapeHTML(section.label)}</p>` : ''}
+          ${section.title ? `<h3>${escapeHTML(section.title)}</h3>` : ''}
+          ${section.text ? `<p>${escapeHTML(section.text)}</p>` : ''}
+        </div>
+      </section>
+    `).join('');
+  }
+
+  function renderProjectDetail(data) {
+    return `
+      <header class="project-hero-block">
+        <div>
+          <p class="project-category">${escapeHTML(data.category || '')}</p>
+          <h2>${escapeHTML(data.title || '作品介紹')}</h2>
+          <p class="project-lead">${escapeHTML(data.desc || '')}</p>
+        </div>
+        ${renderInfo(data)}
+      </header>
+
+      ${renderMediaBlock(data, 'project-main-media')}
+
+      <div class="project-body-grid">
+        ${renderContentList(data)}
+        <section class="project-text-block">
+          <p class="project-kicker">NOTE</p>
+          <h3>呈現方式</h3>
+          <p>此版改成案例頁結構，圖片與文字分段呈現。之後只要在作品資料中新增 section，就可以自由增加「圖片＋說明」，不用再把整個專案做成一張長圖。</p>
+        </section>
+      </div>
+
+      <div class="project-story">
+        ${renderSections(data)}
+      </div>
+    `;
   }
 
   function openModal(key, element) {
     const data = worksData[key] || getFallbackData(element);
 
-    if (!data || !modal || !modalMedia) return;
+    if (!data || !modal || !modalProjectDetail) return;
 
-    modalMedia.innerHTML = renderMedia(data);
-    modalCategory.textContent = data.category || '';
-    modalTitle.textContent = data.title || '';
-    modalDesc.textContent = data.desc || '';
-    modalTags.innerHTML = renderDetail(data);
-
+    modalProjectDetail.innerHTML = renderProjectDetail(data);
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
 
   function closeModal() {
-    if (!modal || !modalMedia) return;
+    if (!modal || !modalProjectDetail) return;
 
     modal.classList.remove('active');
-    modalMedia.innerHTML = '';
+    modalProjectDetail.innerHTML = '';
     document.body.style.overflow = '';
   }
 
